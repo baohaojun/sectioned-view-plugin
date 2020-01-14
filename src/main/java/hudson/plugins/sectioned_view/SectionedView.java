@@ -46,6 +46,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
@@ -197,8 +199,13 @@ public class SectionedView extends View {
 	@Override
 	public void onJobRenamed(Item item, String oldName, String newName) {
 		for (SectionedViewSection section : sections) {
-	        if(section.jobNames.remove(oldName) && newName!=null)
-	        	section.jobNames.add(newName);
+			if(section.jobNames != null && section.jobNames.remove(oldName) && newName!=null) {
+				section.jobNames.add(newName);
+                LOGGER.log(Level.WARNING, "Removing job for '" + section.getName() + "'");
+            } else if (section.jobNames == null) {
+				LOGGER.log(Level.WARNING, "Found empty jobNames for '" + section.getName() + "'");
+			}
 		}
 	}
+	private static final Logger LOGGER = Logger.getLogger(SectionedView.class.getName());
 }
